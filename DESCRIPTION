@@ -1,16 +1,33 @@
 Package: EFL0Network
-Title: What the Package Does (One Line, Title Case)
+Title: Elastic Fuse L0 Dynamic Gaussian Graphical Model
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    c(person(given = "Erin",
+             family = "McDonnell",
+             role = c("aut", "cre"),
+             email = "eim2117@cumc.columbia.edu",
+             comment = c(ORCID = "0000-0002-7506-3124")),
+      person(given = "Shanghong",
+             family = "Xie",
+             role = "aut",
+             email = "sx2168@cumc.columbia.ed"),
+      person(given = "Yuanjia",
+             family = "Wang",
+             role = "aut",
+             email = "yw2016@cumc.columbia.edu"))
+Description: This package fits an Elastic Fuse L0 dynamic Gaussian graphical model. Source code has been adapted from package "APML0" (Li et al., 2018, Statistics in Medicine).  
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+LinkingTo: 
+    Rcpp, RcppEigen
+Imports: 
+    Rcpp (>= 0.12.12),
+    modelr,
+    dplyr,
+    MASS,
+    glmnet,
+    matrixcalc
+Depends: Matrix (>= 1.2-10)
