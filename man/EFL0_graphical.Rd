@@ -89,7 +89,6 @@ performance evaluation. Must include columnsm\code{row}, \code{col}, and
 }
 \value{
 A list containing the following:
-\item{cvm}{cross-validation error.}
 \item{coefs_adaptive_weights}{coefficients for adaptive lasso weights at the
 next time point.}
 \item{ridgeC_elastic_fuse}{final beta coefficients to be used in the EFL0

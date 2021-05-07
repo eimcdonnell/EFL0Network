@@ -275,7 +275,7 @@ EFL0_time_varying_graphical = function(data,
       precision_edges  = bind_rows(precision_edges, EFL0_results$precision_edges %>% mutate(time = s_l, method = method))
       partial_edges    = bind_rows(partial_edges,   EFL0_results$partial_edges   %>% mutate(time = s_l, method = method))
       edge_detection   = bind_rows(edge_detection,  EFL0_results$edge_detection  %>% mutate(time = s_l, method = method))
-      cvm_bandwidth[h] = cvm_bandwidth[h] +         EFL0_results$cvm
+      cvm_bandwidth[h] = cvm_bandwidth[h] +         as.numeric(EFL0_results$edge_detection$cvm)
       output_steps     = bind_rows(output_steps,    EFL0_results$output_steps    %>% mutate(time = s_l, method = method))
       
       ################################################################################

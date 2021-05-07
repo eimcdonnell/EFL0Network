@@ -43,7 +43,6 @@
 #' @param seed randomization seed.
 #' 
 #' @return A list containing the following:
-#' \item{cvm}{cross-validation error.}
 #' \item{coefs_adaptive_weights}{coefficients for adaptive lasso weights at the
 #' next time point.}
 #' \item{ridgeC_elastic_fuse}{final beta coefficients to be used in the EFL0
@@ -465,8 +464,7 @@ EFL0_graphical = function(data_current,
     edgetn = nrow(precision_edges_comparison_unique_edges %>% filter(edge_true == 0 & edge_est == 0)) 
     sse    =  sum(precision_edges_comparison_unique_edges %>% mutate(squared_error = (edge_true - edge_est)^2) %>% pull(squared_error))
 
-    return(list(cvm = cvm,
-                coefs_adaptive_weights = coefs_adaptive_weights,
+    return(list(coefs_adaptive_weights = coefs_adaptive_weights,
                 ridgeC_elastic_fuse = ridgeC_elastic_fuse,
                 precision_edges = precision_edges,
                 partial_edges = partial_edges,
@@ -485,7 +483,8 @@ EFL0_graphical = function(data_current,
                                         fn     = edgefn, 
                                         fp     = edgefp, 
                                         tn     = edgetn,
-                                        sse    = sse),
+                                        sse    = sse,
+                                        cvm    = cvm),
                 # EM 2021-03-19: Add output_steps
                 output_steps = output_steps))
   }
