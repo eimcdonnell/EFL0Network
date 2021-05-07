@@ -27,9 +27,13 @@ Imports:
     Rcpp,
     modelr,
     dplyr,
+    tidyselect,
     magrittr,
     tidyr,
+    purrr,
+    stats,
+    utils,
     MASS,
     glmnet,
-    matrixcalc
-Depends: Matrix (>= 1.2-10)
+    matrixcalc,
+    Matrix

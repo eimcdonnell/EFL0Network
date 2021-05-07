@@ -55,6 +55,8 @@
 #' \item{output_steps}{a long dataset of beta coefficients after lasso (L1), 
 #' after soft-thresholding (L2), and after hard-thresholding (L0), when 
 #' applicable.}
+#' 
+#' @export
 
 ################################################################################
 # Program: EFL0_graphical.R

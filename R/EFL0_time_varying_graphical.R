@@ -51,12 +51,8 @@
 #' \item{h_selection}{a dataset of candidate bandwidths and resulting 
 #' cross-validation errors.}
 #' 
-#' @importFrom dplyr select filter mutate arrange
-#' @importFrom tidyr pivot_longer pivot_wider
-#' @importFrom magrittr %>%
-#' @useDynLib EFL0Network
-#' @importFrom Rcpp sourceCpp
-NULL
+#' @export
+
 
 #########################################################################################
 # Program: EFL0_time_varying_graphical.R

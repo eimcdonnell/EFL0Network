@@ -63,6 +63,8 @@
 #' \item{lambda.opt}{value of \code{lambda} based on \code{iL0 = TRUE}.}
 #' \item{flag}{convergence flag (for internal debugging). \code{flag = 0} means 
 #' converged.}
+#' 
+#' @export
 
 #####################################################################################
 # Code modified from the LmL0 function of the APML0 package (Li et al. 2018) 
