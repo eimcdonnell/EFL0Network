@@ -2,7 +2,7 @@
 % Please edit documentation in R/EFL0.R
 \name{EFL0}
 \alias{EFL0}
-\title{Elastic Fuse L0 (EFL0) regression model.}
+\title{EFL0}
 \usage{
 EFL0(
   x,

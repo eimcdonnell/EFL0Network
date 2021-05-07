@@ -2,7 +2,7 @@
 % Please edit documentation in R/EFL0_graphical.R
 \name{EFL0_graphical}
 \alias{EFL0_graphical}
-\title{Elastic Fuse L0 (EFL0) Network.}
+\title{EFL0_graphical}
 \usage{
 EFL0_graphical(
   data_current,

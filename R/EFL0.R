@@ -1,4 +1,6 @@
-#' Elastic Fuse L0 (EFL0) regression model.
+#' @title EFL0
+#' 
+#' @description Elastic Fuse L0 (EFL0) regression model.
 #' 
 #' @param x input matrix. Each row is an observation vector.
 #' @param y response vector.

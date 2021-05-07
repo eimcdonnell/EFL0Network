@@ -1,4 +1,6 @@
-#' Dynamic Elastic Fuse L0 (EFL0) Network.
+#' @title EFL0_time_varying_graphical
+#' 
+#' @description Dynamic Elastic Fuse L0 (EFL0) Network.
 #' 
 #' @param data input dataset. Must include columns \code{id}, \code{s_il}, and
 #'  a column for each node in \code{vars}. 
@@ -48,6 +50,13 @@
 #' applicable.}
 #' \item{h_selection}{a dataset of candidate bandwidths and resulting 
 #' cross-validation errors.}
+#' 
+#' @importFrom dplyr select filter mutate arrange
+#' @importFrom tidyr pivot_longer pivot_wider
+#' @importFrom magrittr %>%
+#' @useDynLib EFL0Network
+#' @importFrom Rcpp sourceCpp
+NULL
 
 #########################################################################################
 # Program: EFL0_time_varying_graphical.R

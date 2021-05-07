@@ -1,4 +1,6 @@
-#' Elastic Fuse L0 (EFL0) Network.
+#' @title EFL0_graphical
+#' 
+#' @description Elastic Fuse L0 (EFL0) Network.
 #' 
 #' @param data_current input dataset. Must include a column \code{weight} and a
 #' column for each node in \code{vars}. 
