@@ -22,7 +22,8 @@ EFL0_time_varying_graphical(
   lambda2_seq_input = NULL,
   nfolds = 5,
   foldid_subj = NULL,
-  seed = 123
+  seed = 123,
+  ...
 )
 }
 \arguments{
@@ -77,7 +78,9 @@ values. Default is \code{NULL}.}
 specifying which fold each subject (or observation if there is only 1
 subject) is in.}
 
-\item{seed}{randomization seed.}
+\item{seed}{randomization seed}
+
+\item{...}{additional arguments to be passed into \code{EFL0_graphical()}.}
 }
 \value{
 A list containing the following:

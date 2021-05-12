@@ -7,7 +7,7 @@
 EFL0_graphical(
   data_current,
   vars,
-  rlambda = 1e-07,
+  rlambda = 1e-04,
   nlambda = 50,
   nlambda2 = 6,
   beta_diff_max = 1,
@@ -34,7 +34,7 @@ column for each node in \code{vars}.}
 \item{vars}{vector of node names.}
 
 \item{rlambda}{fraction of \code{lambda.max} to determine the smallest value
-for \code{lambda}. The default is 0.0000001.}
+for \code{lambda}. The default is 0.0001.}
 
 \item{nlambda}{number of \code{lambda} values. Default is 50.}
 

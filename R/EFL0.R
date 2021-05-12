@@ -11,9 +11,7 @@
 #' overrides this.
 #' @param nlambda number of \code{lambda} values. Default is 50.
 #' @param rlambda fraction of \code{lambda.max} to determine the smallest value 
-#' for \code{lambda}. The default is \code{rlambda = 0.0001} when the number of 
-#' observations is larger than or equal to the number of variables; otherwise, 
-#' \code{rlambda = 0.01}.
+#' for \code{lambda}. The default is 0.0001.
 #' @param wbeta vector of non-negative coefficient-specific adaptive lasso 
 #' weights for the L1 penalty. Default is 1 for all coefficients.
 #' @param nfolds number of folds. With \code{nfolds = 1} and 
@@ -90,7 +88,7 @@
 #                - icutB (will always be TRUE: perform **hard-thresholding** to the coefficients 
 
 EFL0 = function(x, y, weights, lambda=NULL, nlambda=50, 
-                rlambda=NULL, wbeta=rep(1,ncol(x)),
+                rlambda=0.0001, wbeta=rep(1,ncol(x)),
                 nfolds=1, foldid=NULL,  
                 iEFL0=FALSE, lambda2_EFL0=NULL, ridgeC_EFL0=NULL,
                 iL0=TRUE, ncutB=10, isd=FALSE, iysd=FALSE, 
@@ -145,9 +143,6 @@ EFL0 = function(x, y, weights, lambda=NULL, nlambda=50,
   
   if (is.null(lambda)) {
     ilambda=1
-    if (is.null(rlambda)) {
-      rlambda=ifelse(N0>p, 0.0001, 0.01)
-    }
     lambda=(rlambda)^(c(0:(nlambda-1))/(nlambda-1))
   } else {
     ilambda=0

@@ -36,7 +36,8 @@
 #' @param foldid_subj an optional vector of values between 1 and \code{nfolds} 
 #' specifying which fold each subject (or observation if there is only 1 
 #' subject) is in.
-#' @param seed randomization seed.
+#' @param seed randomization seed
+#' @param ... additional arguments to be passed into \code{EFL0_graphical()}.
 #' 
 #' @return A list containing the following:
 #' \item{visit_weights}{a dataset of observation-level kernel weights.}
@@ -90,7 +91,8 @@ EFL0_time_varying_graphical = function(data,
                                        lambda2_seq_input = NULL,
                                        nfolds = 5,
                                        foldid_subj = NULL,
-                                       seed = 123){
+                                       seed = 123,
+                                       ...){
   
   set.seed(seed)
   
@@ -254,7 +256,8 @@ EFL0_time_varying_graphical = function(data,
                                       seed = seed,
                                       nfolds = nfolds,
                                       foldid_subj = foldid_subj,
-                                      precision_edges_true_current = precision_edges_true_current)
+                                      precision_edges_true_current = precision_edges_true_current,
+                                      ...)
       } else{
         print(paste0("Time ", l, ": second case"))
         EFL0_results = EFL0_graphical(data_current = data_centered_visit,
@@ -268,7 +271,8 @@ EFL0_time_varying_graphical = function(data,
                                       seed = seed,
                                       nfolds = nfolds,
                                       foldid_subj = foldid_subj,
-                                      precision_edges_true_current = precision_edges_true_current)
+                                      precision_edges_true_current = precision_edges_true_current,
+                                      ...)
       }
   
       visit_weights    = bind_rows(visit_weights,   data_centered_visit          %>% mutate(time = s_l, method = method) %>% select(time, s_il, weight, method))

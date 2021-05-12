@@ -10,7 +10,7 @@ EFL0(
   weights,
   lambda = NULL,
   nlambda = 50,
-  rlambda = NULL,
+  rlambda = 1e-04,
   wbeta = rep(1, ncol(x)),
   nfolds = 1,
   foldid = NULL,
@@ -42,9 +42,7 @@ overrides this.}
 \item{nlambda}{number of \code{lambda} values. Default is 50.}
 
 \item{rlambda}{fraction of \code{lambda.max} to determine the smallest value
-for \code{lambda}. The default is \code{rlambda = 0.0001} when the number of
-observations is larger than or equal to the number of variables; otherwise,
-\code{rlambda = 0.01}.}
+for \code{lambda}. The default is 0.0001.}
 
 \item{wbeta}{vector of non-negative coefficient-specific adaptive lasso
 weights for the L1 penalty. Default is 1 for all coefficients.}

@@ -6,7 +6,7 @@
 #' column for each node in \code{vars}. 
 #' @param vars vector of node names.
 #' @param rlambda fraction of \code{lambda.max} to determine the smallest value 
-#' for \code{lambda}. The default is 0.0000001.
+#' for \code{lambda}. The default is 0.0001.
 #' @param nlambda number of \code{lambda} values. Default is 50.
 #' @param nlambda2 number of \code{lambda2} values. Default is 6.
 #' @param beta_diff_max optional maximum tolerated change in beta coefficients 
@@ -71,7 +71,7 @@
 
 EFL0_graphical = function(data_current, 
                           vars,
-                          rlambda = 0.0000001, 
+                          rlambda = 0.0001, 
                           nlambda = 50,
                           nlambda2 = 6,
                           beta_diff_max = 1,
