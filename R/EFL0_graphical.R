@@ -151,6 +151,9 @@ EFL0_graphical = function(data_current,
   lambda2 = NULL
   lambda2_is_lambda2min = NULL
   lambda2_is_lambda2max = NULL
+  # EM 2021-05-12: Add tibbles for lambda sequences and chosen lambdas for each outcome node.
+  lambda_seqs = NULL
+  chosen_lambdas = NULL
   cv_betas = list()
   cv_int = NULL
   betas_adaptive_weights = list()
@@ -246,12 +249,15 @@ EFL0_graphical = function(data_current,
     
     if(L0){
       
-      output_steps = bind_rows(output_steps,  
-                               tibble(step = "Soft",
-                                      coef = temp_model$Beta_soft, 
-                                      outcome = vars[j],
-                                      variable = c(vars[-j])))
+      if(EFL0_current){
       
+        output_steps = bind_rows(output_steps,  
+                                 tibble(step = "Soft",
+                                        coef = temp_model$Beta_soft, 
+                                        outcome = vars[j],
+                                        variable = c(vars[-j])))
+      }
+        
       output_steps = bind_rows(output_steps,
                                tibble(step = "Hard",
                                       coef = temp_model$Beta0,
@@ -281,6 +287,12 @@ EFL0_graphical = function(data_current,
     lambda_is_lambdamax[j] = as.numeric(lambda[j] == max(temp_model$fit$lambda))
     cv_int[j] = temp_model$a
     
+    # EM 2021-05-12: Add a tibble of lambda sequences for each outcome node
+    lambda_seqs = bind_rows(lambda_seqs, tibble(lambda_seq = temp_model$fit$lambda, tuning_parm = "lambda1", outcome_node = j))
+    if(EFL0_current){
+      lambda_seqs = bind_rows(lambda_seqs, tibble(lambda_seq = lambda2_seq, tuning_parm = "lambda2", outcome_node = j))
+    }
+
     # Non-regularized model for constructing the next time point's adaptive weights
     if(adaptive == TRUE){
       if(adaptive_ridge == TRUE){
@@ -312,6 +324,24 @@ EFL0_graphical = function(data_current,
   lambda_range = max(lambda) - min(lambda)
   lambdamax_range = max(lambdamax) - min(lambdamax)
   lambda_num_zero = sum(lambda == 0)
+  
+  # EM 2021-05-12: Add a tibble of chosen lambdas for each outcome node.
+  if(EFL0_current){
+    chosen_lambdas = bind_rows(chosen_lambdas, 
+                               tibble(outcome_node = 1:p,
+                                      lambda1 = lambda, 
+                                      lambda2 = lambda2,
+                                      lambda_is_lambdamin = lambda_is_lambdamin,
+                                      lambda_is_lambdamax = lambda_is_lambdamax,
+                                      lambda2_is_lambda2min = lambda2_is_lambda2min,
+                                      lambda2_is_lambda2max = lambda2_is_lambda2max))
+  } else{
+    chosen_lambdas = bind_rows(chosen_lambdas, 
+                               tibble(outcome_node = 1:p,
+                                      lambda1 = lambda, 
+                                      lambda_is_lambdamin = lambda_is_lambdamin,
+                                      lambda_is_lambdamax = lambda_is_lambdamax))
+  }
 
   #########################################################################################
   # Now focus on the p EFL0 models we need (corresponding to our selected lambdas).
@@ -436,19 +466,11 @@ EFL0_graphical = function(data_current,
                 ridgeC_elastic_fuse = ridgeC_elastic_fuse,
                 precision_edges = precision_edges,
                 partial_edges = partial_edges,
-                edge_detection = tibble(lambda_mean = mean(lambda),
-                                        lambda_range = lambda_range,
-                                        lambda_is_lambdamin = mean(lambda_is_lambdamin),
-                                        lambda_is_lambdamax = mean(lambda_is_lambdamax),
-                                        lambdamax_range = lambdamax_range,
-                                        lambda2_mean = mean(lambda2),
-                                        lambda2_range = lambda2_range,
-                                        lambda2_is_lambda2min = mean(lambda2_is_lambda2min),
-                                        lambda2_is_lambda2max = mean(lambda2_is_lambda2max),
-                                        lambda_num_zero = lambda_num_zero,
-                                        lambda2_num_zero = lambda2_num_zero),
                 # EM 2021-03-19: Add output_steps
-                output_steps = output_steps))
+                output_steps = output_steps,
+                # EM 2021-05-12: Add node-level lambda information
+                lambda_seqs = lambda_seqs,
+                chosen_lambda = chosen_lambdas))
   } else{
     
     precision_edges_comparison = full_join(precision_edges_true_current %>% arrange(row, col) %>% rename(edge_true = edge),
@@ -468,24 +490,16 @@ EFL0_graphical = function(data_current,
                 ridgeC_elastic_fuse = ridgeC_elastic_fuse,
                 precision_edges = precision_edges,
                 partial_edges = partial_edges,
-                edge_detection = tibble(lambda_mean = mean(lambda),
-                                        lambda_range = lambda_range,
-                                        lambda_is_lambdamin = mean(lambda_is_lambdamin),
-                                        lambda_is_lambdamax = mean(lambda_is_lambdamax),
-                                        lambdamax_range = lambdamax_range,
-                                        lambda2_mean = mean(lambda2),
-                                        lambda2_range = lambda2_range,
-                                        lambda2_is_lambda2min = mean(lambda2_is_lambda2min),
-                                        lambda2_is_lambda2max = mean(lambda2_is_lambda2max),
-                                        lambda_num_zero = lambda_num_zero,
-                                        lambda2_num_zero = lambda2_num_zero,
-                                        tp     = edgetp, 
+                edge_detection = tibble(tp     = edgetp, 
                                         fn     = edgefn, 
                                         fp     = edgefp, 
                                         tn     = edgetn,
                                         sse    = sse,
                                         cvm    = cvm),
                 # EM 2021-03-19: Add output_steps
-                output_steps = output_steps))
+                output_steps = output_steps,
+                # EM 2021-05-12: Add node-level lambda information
+                lambda_seqs = lambda_seqs,
+                chosen_lambdas = chosen_lambdas))
   }
 }

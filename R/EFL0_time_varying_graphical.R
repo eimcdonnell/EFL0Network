@@ -132,6 +132,8 @@ EFL0_time_varying_graphical = function(data,
   partial_edges_all_h   = list()
   edge_detection_all_h  = list()
   output_steps_all_h    = list()
+  lambda_seqs_all_h     = list()
+  chosen_lambdas_all_h  = list()
 
   ################################################################################
   # Center each node on its visit-specific predicted mean using a loess regression
@@ -190,6 +192,8 @@ EFL0_time_varying_graphical = function(data,
     adaptive_weights = NULL
     ridgeC           = NULL
     output_steps     = NULL
+    lambda_seqs      = NULL
+    chosen_lambdas   = NULL
     
     ################################################################################
     # Loop through visits
@@ -281,6 +285,8 @@ EFL0_time_varying_graphical = function(data,
       edge_detection   = bind_rows(edge_detection,  EFL0_results$edge_detection  %>% mutate(time = s_l, method = method))
       cvm_bandwidth[h] = cvm_bandwidth[h] +         as.numeric(EFL0_results$edge_detection$cvm)
       output_steps     = bind_rows(output_steps,    EFL0_results$output_steps    %>% mutate(time = s_l, method = method))
+      lambda_seqs      = bind_rows(lambda_seqs,     EFL0_results$lambda_seqs     %>% mutate(time = s_l, method = method))
+      chosen_lambdas   = bind_rows(chosen_lambdas,  EFL0_results$chosen_lambdas  %>% mutate(time = s_l, method = method))
       
       ################################################################################
       # Store betas for Adaptive lasso at the next visit
@@ -309,6 +315,8 @@ EFL0_time_varying_graphical = function(data,
     partial_edges_all_h[[h]]   = partial_edges
     edge_detection_all_h[[h]]  = edge_detection
     output_steps_all_h[[h]]    = output_steps
+    lambda_seqs_all_h[[h]]     = lambda_seqs
+    chosen_lambdas_all_h[[h]]  = chosen_lambdas
   }
   
   ################################################################################
@@ -326,7 +334,9 @@ EFL0_time_varying_graphical = function(data,
     mutate(h_is_min_h = as.numeric(h == min(h_sequence)),
            h_is_max_h = as.numeric(h == max(h_sequence)))
   output_steps_final    = output_steps_all_h[[h_index]]
-  
+  lambda_seqs_final     = lambda_seqs_all_h[[h_index]]
+  chosen_lambdas_final  = chosen_lambdas_all_h[[h_index]]
+ 
   return(list(visit_weights   = visit_weights_final,
               precision_edges = precision_edges_final,
               partial_edges   = partial_edges_final,
@@ -334,5 +344,7 @@ EFL0_time_varying_graphical = function(data,
               foldid          = foldid_subj,
               output_steps    = output_steps_final,
               h_selection     = tibble(h   = h_sequence,
-                                       cvm = cvm_bandwidth)))
+                                       cvm = cvm_bandwidth),
+              lambda_seqs     = lambda_seqs_final,
+              chosen_lambdas  = chosen_lambdas_final))
 }
