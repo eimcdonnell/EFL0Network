@@ -23,6 +23,7 @@ EFL0_graphical(
   lambda2_seq_input = NULL,
   nfolds = 5,
   foldid_subj = NULL,
+  beta_min_threshold = 0,
   precision_edges_true_current,
   seed = 123
 )

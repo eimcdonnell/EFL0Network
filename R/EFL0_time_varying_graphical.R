@@ -45,6 +45,8 @@
 #' \item{partial_edges}{a long dataset of partial correlation matrix elements.}
 #' \item{edge_detection}{a matrix of tuning parameter values and performance 
 #' metrics.}
+#' \item{model_specific_cvm}{a matrix of model-specific cross-validation errors 
+#' for each node-specific model at each time point.}
 #' \item{foldid}{the foldids that were used to perform cross-validation.}
 #' \item{output_steps}{a long dataset of beta coefficients after lasso (L1), 
 #' after soft-thresholding (L2), and after hard-thresholding (L0), when 
@@ -127,13 +129,14 @@ EFL0_time_varying_graphical = function(data,
   }
   
   # Shells for analysis output
-  visit_weights_all_h   = list()
-  precision_edges_all_h = list()
-  partial_edges_all_h   = list()
-  edge_detection_all_h  = list()
-  output_steps_all_h    = list()
-  lambda_seqs_all_h     = list()
-  chosen_lambdas_all_h  = list()
+  visit_weights_all_h       = list()
+  precision_edges_all_h     = list()
+  partial_edges_all_h       = list()
+  edge_detection_all_h      = list()
+  model_specific_cvm_all_h  = list()
+  output_steps_all_h        = list()
+  lambda_seqs_all_h         = list()
+  chosen_lambdas_all_h      = list()
 
   ################################################################################
   # Center each node on its visit-specific predicted mean using a loess regression
@@ -185,15 +188,16 @@ EFL0_time_varying_graphical = function(data,
     h_current = h_sequence[h]
     
     # Shells for analysis output
-    visit_weights    = NULL
-    precision_edges  = NULL
-    partial_edges    = NULL
-    edge_detection   = NULL
-    adaptive_weights = NULL
-    ridgeC           = NULL
-    output_steps     = NULL
-    lambda_seqs      = NULL
-    chosen_lambdas   = NULL
+    visit_weights      = NULL
+    precision_edges    = NULL
+    partial_edges      = NULL
+    edge_detection     = NULL
+    model_specific_cvm = NULL
+    adaptive_weights   = NULL
+    ridgeC             = NULL
+    output_steps       = NULL
+    lambda_seqs        = NULL
+    chosen_lambdas     = NULL
     
     ################################################################################
     # Loop through visits
@@ -279,14 +283,15 @@ EFL0_time_varying_graphical = function(data,
                                       ...)
       }
   
-      visit_weights    = bind_rows(visit_weights,   data_centered_visit          %>% mutate(time = s_l, method = method) %>% select(time, s_il, weight, method))
-      precision_edges  = bind_rows(precision_edges, EFL0_results$precision_edges %>% mutate(time = s_l, method = method))
-      partial_edges    = bind_rows(partial_edges,   EFL0_results$partial_edges   %>% mutate(time = s_l, method = method))
-      edge_detection   = bind_rows(edge_detection,  EFL0_results$edge_detection  %>% mutate(time = s_l, method = method))
-      cvm_bandwidth[h] = cvm_bandwidth[h] +         as.numeric(EFL0_results$edge_detection$cvm)
-      output_steps     = bind_rows(output_steps,    EFL0_results$output_steps    %>% mutate(time = s_l, method = method))
-      lambda_seqs      = bind_rows(lambda_seqs,     EFL0_results$lambda_seqs     %>% mutate(time = s_l, method = method))
-      chosen_lambdas   = bind_rows(chosen_lambdas,  EFL0_results$chosen_lambdas  %>% mutate(time = s_l, method = method))
+      visit_weights      = bind_rows(visit_weights,      data_centered_visit             %>% mutate(time = s_l, method = method) %>% select(time, s_il, weight, method))
+      precision_edges    = bind_rows(precision_edges,    EFL0_results$precision_edges    %>% mutate(time = s_l, method = method))
+      partial_edges      = bind_rows(partial_edges,      EFL0_results$partial_edges      %>% mutate(time = s_l, method = method))
+      edge_detection     = bind_rows(edge_detection,     EFL0_results$edge_detection     %>% mutate(time = s_l, method = method))
+      model_specific_cvm = bind_rows(model_specific_cvm, EFL0_results$model_specific_cvm %>% mutate(time = s_l, method = method))
+      cvm_bandwidth[h]   = cvm_bandwidth[h] +            sum(EFL0_results$model_specific_cvm$cvm)
+      output_steps       = bind_rows(output_steps,       EFL0_results$output_steps       %>% mutate(time = s_l, method = method))
+      lambda_seqs        = bind_rows(lambda_seqs,        EFL0_results$lambda_seqs        %>% mutate(time = s_l, method = method))
+      chosen_lambdas     = bind_rows(chosen_lambdas,     EFL0_results$chosen_lambdas     %>% mutate(time = s_l, method = method))
       
       ################################################################################
       # Store betas for Adaptive lasso at the next visit
@@ -310,13 +315,14 @@ EFL0_time_varying_graphical = function(data,
     ################################################################################
     # Store results for this bandwidth in the lists of all results
     
-    visit_weights_all_h[[h]]   = visit_weights
-    precision_edges_all_h[[h]] = precision_edges
-    partial_edges_all_h[[h]]   = partial_edges
-    edge_detection_all_h[[h]]  = edge_detection
-    output_steps_all_h[[h]]    = output_steps
-    lambda_seqs_all_h[[h]]     = lambda_seqs
-    chosen_lambdas_all_h[[h]]  = chosen_lambdas
+    visit_weights_all_h[[h]]      = visit_weights
+    precision_edges_all_h[[h]]    = precision_edges
+    partial_edges_all_h[[h]]      = partial_edges
+    edge_detection_all_h[[h]]     = edge_detection
+    model_specific_cvm_all_h[[h]] = model_specific_cvm
+    output_steps_all_h[[h]]       = output_steps
+    lambda_seqs_all_h[[h]]        = lambda_seqs
+    chosen_lambdas_all_h[[h]]     = chosen_lambdas
   }
   
   ################################################################################
@@ -326,21 +332,23 @@ EFL0_time_varying_graphical = function(data,
   h_final = h_sequence[h_index]
   print(paste0("Final bandwidth h_index: ", h_index))
   
-  visit_weights_final   = visit_weights_all_h[[h_index]]
-  precision_edges_final = precision_edges_all_h[[h_index]]
-  partial_edges_final   = partial_edges_all_h[[h_index]]
-  edge_detection_final  = edge_detection_all_h[[h_index]] %>%
+  visit_weights_final      = visit_weights_all_h[[h_index]]
+  precision_edges_final    = precision_edges_all_h[[h_index]]
+  partial_edges_final      = partial_edges_all_h[[h_index]]
+  edge_detection_final     = edge_detection_all_h[[h_index]] %>%
     mutate(h = h_final) %>%
-    mutate(h_is_min_h = as.numeric(h == min(h_sequence)),
+    mutate(h_is_min_h  = as.numeric(h == min(h_sequence)),
            h_is_max_h = as.numeric(h == max(h_sequence)))
-  output_steps_final    = output_steps_all_h[[h_index]]
-  lambda_seqs_final     = lambda_seqs_all_h[[h_index]]
-  chosen_lambdas_final  = chosen_lambdas_all_h[[h_index]]
+  model_specific_cvm_final = model_specific_cvm_all_h[[h_index]]
+  output_steps_final       = output_steps_all_h[[h_index]]
+  lambda_seqs_final        = lambda_seqs_all_h[[h_index]]
+  chosen_lambdas_final     = chosen_lambdas_all_h[[h_index]]
  
   return(list(visit_weights   = visit_weights_final,
               precision_edges = precision_edges_final,
               partial_edges   = partial_edges_final,
               edge_detection  = edge_detection_final,
+              model_specific_cvm = model_specific_cvm_final,
               foldid          = foldid_subj,
               output_steps    = output_steps_final,
               h_selection     = tibble(h   = h_sequence,

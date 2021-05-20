@@ -89,6 +89,8 @@ A list containing the following:
 \item{partial_edges}{a long dataset of partial correlation matrix elements.}
 \item{edge_detection}{a matrix of tuning parameter values and performance
 metrics.}
+\item{model_specific_cvm}{a matrix of model-specific cross-validation errors
+for each node-specific model at each time point.}
 \item{foldid}{the foldids that were used to perform cross-validation.}
 \item{output_steps}{a long dataset of beta coefficients after lasso (L1),
 after soft-thresholding (L2), and after hard-thresholding (L0), when

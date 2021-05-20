@@ -87,6 +87,7 @@ EFL0_graphical = function(data_current,
                           lambda2_seq_input = NULL,
                           nfolds = 5,
                           foldid_subj = NULL,
+                          beta_min_threshold = 0,
                           precision_edges_true_current, 
                           seed = 123){
   set.seed(seed)
@@ -157,7 +158,7 @@ EFL0_graphical = function(data_current,
   cv_betas = list()
   cv_int = NULL
   betas_adaptive_weights = list()
-  cvm = 0
+  model_specific_cvm = NULL
   # EM 2021-03-19: Add output_steps
   output_steps = NULL
   
@@ -272,20 +273,25 @@ EFL0_graphical = function(data_current,
       lambda2_is_lambda2min[j] = as.numeric(lambda2[j] == min(lambda2_seq))
       lambda2_is_lambda2max[j] = as.numeric(lambda2[j] == max(lambda2_seq))
       cv_betas[[j]] = temp_model$Beta0
-      cvm = cvm + temp_model$fit0$cvm
+      model_specific_cvm = bind_rows(model_specific_cvm, tibble(outcome = paste0("node_", j), cvm = temp_model$fit0$cvm))
     } else if(L0 == TRUE){
       lambda[j] = temp_model$lambda.opt
       cv_betas[[j]] = temp_model$Beta0
-      cvm = cvm + temp_model$fit0$cvm
+      model_specific_cvm = bind_rows(model_specific_cvm, tibble(outcome = paste0("node_", j), cvm = temp_model$fit0$cvm))
     } else{
       lambda[j] = temp_model$lambda.min
       cv_betas[[j]] = temp_model$Beta
-      cvm = cvm + min(temp_model$fit$cvm)
+      model_specific_cvm = bind_rows(model_specific_cvm, tibble(outcome = paste0("node_", j), cvm = min(temp_model$fit$cvm)))
     }
     lambdamax[j] = max(temp_model$fit$lambda)
     lambda_is_lambdamin[j] = as.numeric(lambda[j] == min(temp_model$fit$lambda))
     lambda_is_lambdamax[j] = as.numeric(lambda[j] == max(temp_model$fit$lambda))
     cv_int[j] = temp_model$a
+    
+    # EM 2021-05-19: Use the "beta min condition" to further threshold estimates at s * sqrt(log(p/n))
+    #s = sum(cv_betas[[j]] != 0)
+    #cv_betas[[j]][which(abs(cv_betas[[j]]) < s * sqrt(log(p/nrow(data_standardized))))] = 0
+    cv_betas[[j]][which(abs(cv_betas[[j]]) < beta_min_threshold)] = 0
     
     # EM 2021-05-12: Add a tibble of lambda sequences for each outcome node
     lambda_seqs = bind_rows(lambda_seqs, tibble(lambda_seq = temp_model$fit$lambda, tuning_parm = "lambda1", outcome_node = j))
@@ -461,11 +467,12 @@ EFL0_graphical = function(data_current,
     select(row, col, edge)
   
   if(is.null(precision_edges_true_current)){
-    return(list(cvm = cvm,
-                coefs_adaptive_weights = coefs_adaptive_weights,
+    return(list(coefs_adaptive_weights = coefs_adaptive_weights,
                 ridgeC_elastic_fuse = ridgeC_elastic_fuse,
                 precision_edges = precision_edges,
                 partial_edges = partial_edges,
+                # EM 2021-05-19: Add model-specific cvm
+                model_specific_cvm = model_specific_cvm,
                 # EM 2021-03-19: Add output_steps
                 output_steps = output_steps,
                 # EM 2021-05-12: Add node-level lambda information
@@ -495,7 +502,9 @@ EFL0_graphical = function(data_current,
                                         fp     = edgefp, 
                                         tn     = edgetn,
                                         sse    = sse,
-                                        cvm    = cvm),
+                                        cvm    = sum(model_specific_cvm$cvm)),
+                # EM 2021-05-19: Add model-specific cvm
+                model_specific_cvm = model_specific_cvm,
                 # EM 2021-03-19: Add output_steps
                 output_steps = output_steps,
                 # EM 2021-05-12: Add node-level lambda information
