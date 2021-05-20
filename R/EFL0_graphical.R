@@ -87,7 +87,8 @@ EFL0_graphical = function(data_current,
                           lambda2_seq_input = NULL,
                           nfolds = 5,
                           foldid_subj = NULL,
-                          beta_min_threshold = 0,
+                          threshold = FALSE,
+                          threshold_value = NULL,
                           precision_edges_true_current, 
                           seed = 123){
   set.seed(seed)
@@ -289,9 +290,13 @@ EFL0_graphical = function(data_current,
     cv_int[j] = temp_model$a
     
     # EM 2021-05-19: Use the "beta min condition" to further threshold estimates at s * sqrt(log(p/n))
-    #s = sum(cv_betas[[j]] != 0)
-    #cv_betas[[j]][which(abs(cv_betas[[j]]) < s * sqrt(log(p/nrow(data_standardized))))] = 0
-    cv_betas[[j]][which(abs(cv_betas[[j]]) < beta_min_threshold)] = 0
+    if(threshold){
+      if(is.null(threshold_value)){
+        cv_betas[[j]][which(abs(cv_betas[[j]]) < sqrt(log(p-1) / nrow(data_standardized)))] = 0
+      } else{
+        cv_betas[[j]][which(abs(cv_betas[[j]]) < threshold_value)] = 0
+      }
+    }
     
     # EM 2021-05-12: Add a tibble of lambda sequences for each outcome node
     lambda_seqs = bind_rows(lambda_seqs, tibble(lambda_seq = temp_model$fit$lambda, tuning_parm = "lambda1", outcome_node = j))
