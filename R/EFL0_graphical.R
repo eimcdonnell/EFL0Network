@@ -482,7 +482,7 @@ EFL0_graphical = function(data_current,
                 output_steps = output_steps,
                 # EM 2021-05-12: Add node-level lambda information
                 lambda_seqs = lambda_seqs,
-                chosen_lambda = chosen_lambdas))
+                chosen_lambdas = chosen_lambdas))
   } else{
     
     precision_edges_comparison = full_join(precision_edges_true_current %>% arrange(row, col) %>% rename(edge_true = edge),

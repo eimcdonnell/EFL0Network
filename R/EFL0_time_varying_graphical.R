@@ -286,12 +286,14 @@ EFL0_time_varying_graphical = function(data,
       visit_weights      = bind_rows(visit_weights,      data_centered_visit             %>% mutate(time = s_l, method = method) %>% select(time, s_il, weight, method))
       precision_edges    = bind_rows(precision_edges,    EFL0_results$precision_edges    %>% mutate(time = s_l, method = method))
       partial_edges      = bind_rows(partial_edges,      EFL0_results$partial_edges      %>% mutate(time = s_l, method = method))
-      edge_detection     = bind_rows(edge_detection,     EFL0_results$edge_detection     %>% mutate(time = s_l, method = method))
       model_specific_cvm = bind_rows(model_specific_cvm, EFL0_results$model_specific_cvm %>% mutate(time = s_l, method = method))
       cvm_bandwidth[h]   = cvm_bandwidth[h] +            sum(EFL0_results$model_specific_cvm$cvm)
       output_steps       = bind_rows(output_steps,       EFL0_results$output_steps       %>% mutate(time = s_l, method = method))
       lambda_seqs        = bind_rows(lambda_seqs,        EFL0_results$lambda_seqs        %>% mutate(time = s_l, method = method))
       chosen_lambdas     = bind_rows(chosen_lambdas,     EFL0_results$chosen_lambdas     %>% mutate(time = s_l, method = method))
+      if(!is.null(precision_edges_true)){
+        edge_detection  = bind_rows(edge_detection,     EFL0_results$edge_detection     %>% mutate(time = s_l, method = method))
+      }
       
       ################################################################################
       # Store betas for Adaptive lasso at the next visit
@@ -335,14 +337,19 @@ EFL0_time_varying_graphical = function(data,
   visit_weights_final      = visit_weights_all_h[[h_index]]
   precision_edges_final    = precision_edges_all_h[[h_index]]
   partial_edges_final      = partial_edges_all_h[[h_index]]
-  edge_detection_final     = edge_detection_all_h[[h_index]] %>%
-    mutate(h = h_final) %>%
-    mutate(h_is_min_h  = as.numeric(h == min(h_sequence)),
-           h_is_max_h = as.numeric(h == max(h_sequence)))
   model_specific_cvm_final = model_specific_cvm_all_h[[h_index]]
   output_steps_final       = output_steps_all_h[[h_index]]
   lambda_seqs_final        = lambda_seqs_all_h[[h_index]]
   chosen_lambdas_final     = chosen_lambdas_all_h[[h_index]]
+  if(!is.null(precision_edges_true)){
+    edge_detection_final     = edge_detection_all_h[[h_index]] %>%
+      mutate(h = h_final) %>%
+      mutate(h_is_min_h  = as.numeric(h == min(h_sequence)),
+             h_is_max_h = as.numeric(h == max(h_sequence)))
+  } else{
+    edge_detection_final = NULL
+  }
+  
  
   return(list(visit_weights   = visit_weights_final,
               precision_edges = precision_edges_final,
